@@ -2,9 +2,6 @@
 import { Model } from 'sequelize';
 import { Book } from '../models/Models';
 
-import ResponseError from '../utils/ResponseError';
-import { Sequelize } from 'sequelize';
-
 interface IBook {
     id?: string,
     title: string,
@@ -14,22 +11,31 @@ interface IBook {
     availability?: number
 }
 
-// interface IReturnBook extends IBook {
-//     id: string,
-// }
-
 export class BooksServices {
 
-    async getBooks(): Promise<Model[]> {
+    async getBooks(): Promise<Model<IBook>[]> {
 
-        const books: Model[] = await Book.findAll({
+        const books: Model<IBook>[] = await Book.findAll({
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
             raw: true
         })
-        console.log(books)
+
         return books;
+    }
+
+
+    async getBookById(id: string): Promise<Model<IBook> | null> {
+        const bookById = await Book.findByPk(id,
+            {
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+                raw: true
+            })
+
+        return bookById;
     }
 
     async createBook(dataBook: IBook): Promise<IBook | void> {
@@ -44,6 +50,28 @@ export class BooksServices {
         return bookData;
     }
 
+    async updateBookById(id: string, updateData: IBook): Promise<IBook | number> {
+        const { title, author, yearPublication, pages, availability } = updateData;
+
+        const updatedBook = await Book.update({ title, author, yearPublication, pages, availability },
+            {
+                where: { id },
+                returning: true,
+            });
+
+        const [count] = updatedBook;
+
+        return updatedBook[1][0]?.dataValues || count
+
+    }
+
+    async deleteBookById(id: string): Promise<number> {
+
+        const isDeleted = await Book.destroy({ where: { id } })
+
+        return isDeleted
+
+    }
 
 }
 
