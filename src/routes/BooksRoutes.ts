@@ -11,7 +11,7 @@ router.get('/:id', booksControllers.getBookById)
 
 router.post('/', booksControllers.createBook);
 
-router.put('/:id', booksControllers.updateBookById)
+router.patch('/:id', booksControllers.updateBookById)
 
 router.delete('/:id', booksControllers.deleteBookById)
 
