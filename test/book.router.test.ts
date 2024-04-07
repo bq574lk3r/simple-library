@@ -27,6 +27,18 @@ describe('POST /books', () => {
         expect(res.statusCode).toEqual(200);
         expect(res.body).toEqual(expect.objectContaining(objectExpect))
     })
+
+    it('returns status code 400 if incorrect data', async () => {
+        const res = await request(app)
+            .post('/books')
+            .send({
+                "title": "testBook",
+                "author": "test",
+                "yearPublication": 2000,
+                "pages": "X"
+            })
+        expect(res.statusCode).toEqual(400);
+    })
 })
 
 describe('GET /books', () => {
@@ -54,17 +66,29 @@ describe('PATCH /books/:id', () => {
     });
 
     it('returns status code 200', async () => {
-        const newTitle = 'testTitle'
         const res = await request(app)
             .patch('/books/' + idTask)
             .send(
                 {
-                    title: newTitle
+                    title: 'testTitle'
                 }
             )
 
         expect(res.statusCode).toEqual(200);
         expect(res.body).toEqual(expect.objectContaining(objectExpect))
+    })
+
+    it('returns status code 400 if incorrect data', async () => {
+        const res = await request(app)
+            .patch('/books/' + idTask)
+            .send(
+                {
+                    title: ''
+                }
+            )
+
+        expect(res.statusCode).toEqual(400);
+    
     })
 })
 
