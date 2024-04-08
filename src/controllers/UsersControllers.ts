@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import usersServices from '../services/UsersServices';
 
+import { validationResult } from "express-validator";
+
 import ResponseError from '../utils/ResponseError';
 import ErrorHandler from '../helpers/ErrorHandlerHelpers'
 
@@ -15,6 +17,12 @@ import jwt from 'jsonwebtoken';
 class UsersControllers {
     async createUser(req: Request, res: Response) {
         try {
+
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw new ResponseError(400, errors.array());
+            }
+
             const dataUser = req.body;
 
             dataUser.password = passCrypt.createHash(dataUser.password)
@@ -23,16 +31,25 @@ class UsersControllers {
 
             res.status(200).send(user);
 
-        } catch (error) {
+        } catch (error: any) {
 
-            ErrorHandler.do(error, res);
-
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                ErrorHandler.do(new ResponseError(400, 'the user is already registered'), res)
+            } else {
+                ErrorHandler.do(error, res);
+            }
         }
 
     }
 
     async loginUser(req: Request, res: Response) {
         try {
+
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw new ResponseError(400, errors.array());
+            }
+
             const { email, password } = req.body;
             const userData = await usersServices.getUserByEmail(email);
 
@@ -72,6 +89,11 @@ class UsersControllers {
     async getUserById(req: Request, res: Response) {
         try {
 
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw new ResponseError(400, errors.array());
+            }
+
             const user = await usersServices.getUserById(req.params.id)
 
             if (!user) throw new ResponseError(404);
@@ -86,13 +108,19 @@ class UsersControllers {
 
     }
 
-    async updateUserById(req: Request, res: Response) {
+    async updateUserById(req: any, res: Response) {
         try {
+
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw new ResponseError(400, errors.array());
+            }
+
             const dataUser = req.body;
 
             dataUser.password && (dataUser.password = passCrypt.createHash(dataUser.password))
 
-            const user = await usersServices.updateUserById(req.params.id, dataUser);
+            const user = await usersServices.updateUserById(req.userId, dataUser);
 
             if (!user) throw new ResponseError(404);
 
@@ -106,10 +134,16 @@ class UsersControllers {
 
     }
 
-    async deleteUserById(req: Request, res: Response) {
+    async deleteUserById(req: any, res: Response) {
         try {
 
-            const isDeleted = await usersServices.deleteUserById(req.params.id);
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw new ResponseError(400, errors.array());
+            }
+
+            const isDeleted = await usersServices.deleteUserById(req.userId);
+
 
             if (!isDeleted) throw new ResponseError(404);
 

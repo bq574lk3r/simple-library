@@ -55,11 +55,14 @@ export class BooksServices {
         const updatedUser = await User.update({ username, email, password },
             {
                 where: { id },
+
                 returning: true,
+
             });
 
         const [count] = updatedUser;
-        return updatedUser[1][0]?.dataValues || count
+        const { password: _, ...user } = updatedUser[1][0]?.dataValues
+        return user || count
     }
 
     async deleteUserById(id: string): Promise<number> {

@@ -10,7 +10,7 @@ const router = express.Router();
 router.use('/books', booksRoutes);
 router.use('/books', authBooksRoutes);
 
-router.use('/settings/:id', authUsersRoutes);
+router.use('/settings/', authUsersRoutes);
 router.use(usersRoutes);
 
 
