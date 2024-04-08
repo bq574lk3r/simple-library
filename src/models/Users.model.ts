@@ -17,16 +17,15 @@ const User = sequelize.define('User', {
         allowNull: false,
         unique: true
     },
-    registered: {
-        type: DataTypes.DATEONLY,
-        defaultValue: DataTypes.NOW,
-    },
     password: {
         type: DataTypes.TEXT,
-
     },
     bookId: {
         type: DataTypes.UUID,
+    },
+    registered: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
     }
 }, {
     indexes: [
