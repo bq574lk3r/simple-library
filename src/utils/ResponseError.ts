@@ -34,6 +34,9 @@ export default class ResponseError {
             case 404:
                 _.msg = 'not found';
                 break;
+            case 406:
+                _.msg = 'Not Acceptable';
+                break;
             case 500:
                 _.msg = 'Internal Server Error';
                 break;

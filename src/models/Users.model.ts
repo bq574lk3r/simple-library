@@ -20,9 +20,6 @@ const User = sequelize.define('User', {
     password: {
         type: DataTypes.TEXT,
     },
-    bookId: {
-        type: DataTypes.UUID,
-    },
     registered: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,

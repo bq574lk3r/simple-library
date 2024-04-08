@@ -1,15 +1,12 @@
 import sequelize from '../config/db'
 import Book from './Books.model'
 import User from './Users.model'
+import BooksUsers from './BooksUsers.model'
 
 
-Book.hasMany(User, {
-    foreignKey: 'bookId'
-})
+Book.belongsToMany(User, { through: BooksUsers })
 
-User.belongsTo(Book, {
-    foreignKey: 'bookId'
-});
+User.belongsToMany(Book, { through: BooksUsers });
 
 
 (async () => {
@@ -21,4 +18,4 @@ User.belongsTo(Book, {
     }
 })()
 
-export { Book, User };
+export { Book, User, BooksUsers };

@@ -7,7 +7,9 @@ const router = express.Router();
 
 router.use(authenticateToken)
 
-router.post('/', validationHelpers.validateDataBook, booksControllers.createBook);
+router.post('/reserve', booksControllers.takeBook)
+
+router.post('/add', validationHelpers.validateDataBook, booksControllers.createBook);
 
 router.patch('/:id', validationHelpers.validateUpdatedData, booksControllers.updateBookById)
 

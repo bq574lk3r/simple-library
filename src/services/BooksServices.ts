@@ -1,6 +1,9 @@
 
 import { Model } from 'sequelize';
-import { Book } from '../models/Models';
+import { Book, BooksUsers } from '../models/Models';
+import sequelize from '../config/db'
+
+import ResponseError from '../utils/ResponseError';
 
 interface IBook {
     id?: string,
@@ -73,6 +76,36 @@ export class BooksServices {
 
     }
 
+    async takeBook(userId: string, bookData: IBook): Promise<any | null> {
+        const { id: bookId } = bookData
+
+        const t = await sequelize.transaction();
+
+        try {
+            const book: any = await Book.decrement('availability',
+                {
+                    by: 1,
+                    where: { id: bookId },
+                    transaction: t
+                })
+
+            const { availability } = book.flat(2)[0]
+
+            if (availability < 0) throw new ResponseError(406)
+
+            let userBook = await BooksUsers.create(
+                { UserId: userId, BookId: bookId }, {
+                transaction: t
+            })
+
+            await t.commit();
+            return userBook;
+        } catch (error) {
+            await t.rollback();
+            throw error
+        }
+
+    }
 }
 
 export default new BooksServices()

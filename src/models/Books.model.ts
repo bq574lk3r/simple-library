@@ -23,6 +23,7 @@ const Book = sequelize.define('Book', {
     availability: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
+        validate: { min: 0 }
     }
 }, {
     indexes: [
