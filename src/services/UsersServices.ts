@@ -14,7 +14,7 @@ interface IUser {
 export class BooksServices {
     async createUser(dataUser: IUser): Promise<Model<IUser> | void> {
         const { username, email, password } = dataUser;
-        console.log(password)
+        
         const newUser = await User.create({
             username, email, password
         });
@@ -40,6 +40,12 @@ export class BooksServices {
         })
 
         return users
+    }
+
+    async countUsers(): Promise<{ count: number }> {
+        const count: number = await User.count()
+
+        return { count }
     }
 
     async getUserById(id: string): Promise<any | null> {

@@ -28,6 +28,26 @@ class BooksControllers {
 
     }
 
+    async countBooks(req: Request, res: Response) {
+        try {
+
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw new ResponseError(400, errors.array());
+            }
+
+            const books = await BooksServices.countBooks()
+
+            res.status(200).send(books);
+
+        } catch (error: any) {
+            console.log(error)
+            ErrorHandler.do(error, res)
+        }
+
+    }
+
+
     async getBookById(req: Request, res: Response) {
         try {
 
@@ -50,6 +70,28 @@ class BooksControllers {
         }
     }
 
+    async searchBooks(req: Request, res: Response) {
+        try {
+
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw new ResponseError(400, errors.array());
+            }
+            const { author = '', title = '' } = req.query
+            const books = await BooksServices.searchBooks({ author, title })
+
+            if (!books) {
+                throw new ResponseError(404);
+            }
+
+            res.status(200).send(books);
+
+        } catch (error: any) {
+
+            ErrorHandler.do(error, res)
+        }
+    }
+
     async createBook(req: Request, res: Response) {
         try {
 
@@ -59,10 +101,10 @@ class BooksControllers {
             }
 
             const book = await BooksServices.createBook(req.body)
-
+            console.log(book)
             res.status(200).send(book);
         } catch (error: any) {
-
+            console.log(error)
             ErrorHandler.do(error, res)
         }
     }

@@ -4,10 +4,8 @@ import validationHelpers from '../helpers/ValidationHelpers';
 
 const router = express.Router();
 
-router.get('/', usersControllers.getUsers);
+router.post('/register', validationHelpers.validateDataUser, usersControllers.createUser);
 
-router.get('/count', usersControllers.countUsers);
-
-router.get('/:id', validationHelpers.validateParamId, usersControllers.getUserById);
+router.post('/login', validationHelpers.validateLogin, usersControllers.loginUser);
 
 export default router

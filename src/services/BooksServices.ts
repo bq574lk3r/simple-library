@@ -1,5 +1,5 @@
 
-import { Model } from 'sequelize';
+import { Model, Op } from 'sequelize';
 import { Book, BooksUsers } from '../models/Models';
 import sequelize from '../config/db'
 
@@ -28,6 +28,11 @@ export class BooksServices {
         return books;
     }
 
+    async countBooks(): Promise<{ count: number }> {
+        const count: number = await Book.count()
+
+        return { count };
+    }
 
     async getBookById(id: string): Promise<Model<IBook> | null> {
         const bookById = await Book.findByPk(id,
@@ -39,6 +44,26 @@ export class BooksServices {
             })
 
         return bookById;
+    }
+
+    async searchBooks(dataBook: { author: any, title: any }): Promise<any | void> {
+        const { author, title } = dataBook
+        const books: Model<IBook>[] = await Book.findAll({
+            where: {
+                title: {
+                    [Op.iLike]: '%' + title + '%'
+                },
+                author: {
+                    [Op.iLike]: '%' + author + '%'
+                }
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+            raw: true
+        })
+
+        return books
     }
 
     async createBook(dataBook: IBook): Promise<IBook | void> {
@@ -69,7 +94,6 @@ export class BooksServices {
     }
 
     async deleteBookById(id: string): Promise<number> {
-
         const isDeleted = await Book.destroy({ where: { id } })
 
         return isDeleted
