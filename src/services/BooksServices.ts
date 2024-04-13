@@ -4,6 +4,8 @@ import { Book, BooksUsers } from '../models/Models';
 import sequelize from '../config/db'
 
 import ResponseError from '../utils/ResponseError';
+import counterIsLeft from '../utils/CounterIsLeft';
+
 
 interface IBook {
     id?: string,
@@ -16,16 +18,29 @@ interface IBook {
 
 export class BooksServices {
 
-    async getBooks(): Promise<Model<IBook>[]> {
-
-        const books: Model<IBook>[] = await Book.findAll({
+    async getBooks(page: number): Promise<any> {
+        const LIMIT_BOOKS = 15;
+        const books = await Book.findAndCountAll({
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
+            offset: (LIMIT_BOOKS * (page - 1)),
+            limit: LIMIT_BOOKS,
+            order: [
+                ['title', 'ASC'],
+            ],
             raw: true
         })
 
-        return books;
+        const { count } = books
+
+        const isLeft = counterIsLeft(count, LIMIT_BOOKS, page)
+
+        return {
+            page,
+            isLeft,
+            ...books
+        };
     }
 
     async countBooks(): Promise<{ count: number }> {
@@ -46,9 +61,11 @@ export class BooksServices {
         return bookById;
     }
 
-    async searchBooks(dataBook: { author: any, title: any }): Promise<any | void> {
-        const { author, title } = dataBook
-        const books: Model<IBook>[] = await Book.findAll({
+    async searchBooks(dataBook: { author: string, title: string, page: number }): Promise<any | void> {
+        const { author, title, page } = dataBook
+        const LIMIT_BOOKS = 15;
+
+        const books = await Book.findAndCountAll({
             where: {
                 title: {
                     [Op.iLike]: '%' + title + '%'
@@ -57,13 +74,26 @@ export class BooksServices {
                     [Op.iLike]: '%' + author + '%'
                 }
             },
+            offset: (LIMIT_BOOKS * (page - 1)),
+            limit: LIMIT_BOOKS,
+            order: [
+                ['title', 'ASC'],
+            ],
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
             raw: true
         })
 
-        return books
+        const { count } = books
+
+        const isLeft = counterIsLeft(count, LIMIT_BOOKS, page)
+
+        return {
+            page,
+            isLeft,
+            ...books
+        };
     }
 
     async createBook(dataBook: IBook): Promise<IBook | void> {

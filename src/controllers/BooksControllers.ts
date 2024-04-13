@@ -16,8 +16,8 @@ class BooksControllers {
             if (!errors.isEmpty()) {
                 throw new ResponseError(400, errors.array());
             }
-
-            const books = await BooksServices.getBooks()
+            const { page = 1 } = req.query
+            const books = await BooksServices.getBooks(Number(page))
 
             res.status(200).send(books);
 
@@ -77,8 +77,8 @@ class BooksControllers {
             if (!errors.isEmpty()) {
                 throw new ResponseError(400, errors.array());
             }
-            const { author = '', title = '' } = req.query
-            const books = await BooksServices.searchBooks({ author, title })
+            const { author = '', title = '', page = 1 } = req.query
+            const books = await BooksServices.searchBooks({ author: String(author), title: String(title), page: Number(page) })
 
             if (!books) {
                 throw new ResponseError(404);

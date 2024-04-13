@@ -1,6 +1,7 @@
 
 import { Model } from 'sequelize';
 import { User } from '../models/Models';
+import counterIsLeft from '../utils/CounterIsLeft';
 
 interface IUser {
     username: string,
@@ -14,7 +15,7 @@ interface IUser {
 export class BooksServices {
     async createUser(dataUser: IUser): Promise<Model<IUser> | void> {
         const { username, email, password } = dataUser;
-        
+
         const newUser = await User.create({
             username, email, password
         });
@@ -33,13 +34,27 @@ export class BooksServices {
         return user
     }
 
-    async getUsers(): Promise<any | null> {
-        const users = await User.findAll({
+    async getUsers(page: number): Promise<any | null> {
+        const LIMIT_USERS = 10;
+        const users = await User.findAndCountAll({
             attributes: ['id', 'username'],
+            offset: (LIMIT_USERS * (page - 1)),
+            limit: LIMIT_USERS,
+            order: [
+                ['username', 'ASC'],
+            ],
             raw: true,
         })
 
-        return users
+        const { count } = users
+
+        const isLeft = counterIsLeft(count, LIMIT_USERS, page)
+
+        return {
+            page,
+            isLeft,
+            ...users
+        }
     }
 
     async countUsers(): Promise<{ count: number }> {

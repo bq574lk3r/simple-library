@@ -54,7 +54,7 @@ class UsersControllers {
             const userData = await usersServices.getUserByEmail(email);
 
             if (!userData) throw new ResponseError(400, "Invalid email address or password");
-            
+
             const { id, password: hashPassword } = userData;
 
             if (!passCrypt.validatePassword(password, hashPassword)) throw new ResponseError(400, "Invalid email address or password");
@@ -73,8 +73,9 @@ class UsersControllers {
 
     async getUsers(req: Request, res: Response) {
         try {
+            const { page = 1 } = req.query
 
-            const users = await usersServices.getUsers()
+            const users = await usersServices.getUsers(Number(page))
 
             res.status(200).send(users);
 

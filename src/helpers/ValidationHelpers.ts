@@ -16,7 +16,7 @@ class ValidationHelpers {
     _userData = [
         body('email').optional().isEmail().withMessage('use the correct email'),
         body('username').optional().isLength({ min: 2 }).isString().withMessage('use the correct username'),
-        body('password').optional().isLength({min: 6,max: 16 }).withMessage('min length 6'),
+        body('password').optional().isLength({ min: 6, max: 16 }).withMessage('min length 6'),
     ]
 
     validateDataUser = [
