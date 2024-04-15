@@ -4,7 +4,7 @@ import validationHelpers from '../helpers/ValidationHelpers';
 
 const router = express.Router();
 
-router.get('/', usersControllers.getUsers);
+router.get('/', validationHelpers.validateQueryPage, usersControllers.getUsers);
 
 router.get('/count', usersControllers.countUsers);
 

@@ -1,5 +1,5 @@
 
-import { Model, Op } from 'sequelize';
+import { Model, Op, Transaction } from 'sequelize';
 import { Book, BooksUsers } from '../models/Models';
 import sequelize from '../config/db'
 
@@ -16,9 +16,16 @@ interface IBook {
     availability?: number
 }
 
+interface ICountedBooks {
+    page: number,
+    isLeft: number,
+    count: number,
+    rows: Model<IBook>[]
+}
+
 export class BooksServices {
 
-    async getBooks(page: number): Promise<any> {
+    async getBooks(page: number): Promise<ICountedBooks> {
         const LIMIT_BOOKS = 15;
         const books = await Book.findAndCountAll({
             attributes: {
@@ -61,7 +68,7 @@ export class BooksServices {
         return bookById;
     }
 
-    async searchBooks(dataBook: { author: string, title: string, page: number }): Promise<any | void> {
+    async searchBooks(dataBook: { author: string, title: string, page: number }): Promise<ICountedBooks | void> {
         const { author, title, page } = dataBook
         const LIMIT_BOOKS = 15;
 
@@ -133,7 +140,9 @@ export class BooksServices {
     async takeBook(userId: string, bookData: IBook): Promise<any | null> {
         const { id: bookId } = bookData
 
-        const t = await sequelize.transaction();
+        const t = await sequelize.transaction({
+            isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED,
+        });
 
         try {
             const book: any = await Book.decrement('availability',

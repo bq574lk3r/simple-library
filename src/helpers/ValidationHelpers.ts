@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 class ValidationHelpers {
     validateUpdatedData = [
@@ -35,6 +35,10 @@ class ValidationHelpers {
 
     validateParamId = [
         param('id').notEmpty().isUUID().withMessage('invalid id')
+    ]
+
+    validateQueryPage = [
+        query('page').optional().isInt({ min: 1 }).withMessage('invalid page, min value is 1')
     ]
 };
 

@@ -73,6 +73,12 @@ class UsersControllers {
 
     async getUsers(req: Request, res: Response) {
         try {
+
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                throw new ResponseError(400, errors.array());
+            }
+            
             const { page = 1 } = req.query
 
             const users = await usersServices.getUsers(Number(page))

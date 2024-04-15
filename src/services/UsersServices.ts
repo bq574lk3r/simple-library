@@ -12,6 +12,13 @@ interface IUser {
     bookId?: string
 }
 
+interface ICountedUsers {
+    page: number,
+    isLeft: number,
+    count: number,
+    rows: Model<IUser>[]
+}
+
 export class BooksServices {
     async createUser(dataUser: IUser): Promise<Model<IUser> | void> {
         const { username, email, password } = dataUser;
@@ -28,13 +35,12 @@ export class BooksServices {
             where: {
                 email
             },
-            raw: true,
         })
 
         return user
     }
 
-    async getUsers(page: number): Promise<any | null> {
+    async getUsers(page: number): Promise<ICountedUsers | null> {
         const LIMIT_USERS = 10;
         const users = await User.findAndCountAll({
             attributes: ['id', 'username'],
@@ -59,11 +65,10 @@ export class BooksServices {
 
     async countUsers(): Promise<{ count: number }> {
         const count: number = await User.count()
-
         return { count }
     }
 
-    async getUserById(id: string): Promise<any | null> {
+    async getUserById(id: string): Promise<Model<IUser> | null> {
         const user = await User.findByPk(id, {
             attributes: ['id', 'username', 'registered'],
             raw: true,
