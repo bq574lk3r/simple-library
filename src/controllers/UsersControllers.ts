@@ -78,7 +78,7 @@ class UsersControllers {
             if (!errors.isEmpty()) {
                 throw new ResponseError(400, errors.array());
             }
-            
+
             const { page = 1 } = req.query
 
             const users = await usersServices.getUsers(Number(page))
@@ -149,9 +149,13 @@ class UsersControllers {
 
             res.status(200).send(user);
 
-        } catch (error) {
+        } catch (error: any) {
 
-            ErrorHandler.do(error, res);
+            if (error.name === 'SequelizeUniqueConstraintError') {
+                ErrorHandler.do(new ResponseError(400, 'the user is already registered'), res)
+            } else {
+                ErrorHandler.do(error, res);
+            }
 
         }
 

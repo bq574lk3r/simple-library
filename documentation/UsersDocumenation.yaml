@@ -1,0 +1,273 @@
+paths:
+  /register/:
+    post:
+      summary: Register User
+      description: Add new user and return new user object with id if success
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResp"
+        "400":
+          description: <b>Bad Request</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /login/:
+    post:
+      summary: Login User
+      description: Log in user and return token
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLogin"
+
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                type: string
+                example: JWTtoken...
+        "400":
+          description: Неверые данные
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /people/:
+    get:
+      summary: get list Users
+      tags:
+        - User
+      parameters:
+        - in: query
+          name: page
+          required: false
+          description: page users
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersArray"
+        "400":
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /people/count/:
+    get:
+      summary: countUsers
+      tags:
+        - User
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                    example: 10
+        "400":
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /people/{id}:
+    get:
+      summary: get current user
+      tags:
+        - User
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: id user
+          schema:
+            type: string
+            example: 227ccd4c-5514-4594-bb6e-9e91c8a07822
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: 93cbcbbf-c9d2-44c5-ba68-274df3a37eb9 
+                  username: 
+                    type: string
+                    example: johnCena
+                  registered:
+                    type: string
+                    example: 2024-04-16T14:15:59.553Z
+        "400":
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+        "404":
+          description: <b>Not Found</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /settings/:
+    patch:
+      summary: Update User
+      description: Update user fields username | email | password and return user object with id if success
+      security:
+        - bearerAuth: []
+      tags:
+        - For authorized users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResp"
+        "400":
+          description: <b>Bad Request</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+    delete:
+      summary: delete user
+      security:
+        - bearerAuth: []
+      tags:
+        - For authorized users
+      responses:
+        "200":
+          description: <b>Ok</b>
+        "400":
+          description: <b>Bad Request</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+        "404":
+          description: <b>Not Found</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+components:
+  schemas:
+    UsersArray:
+      type: object
+      properties:
+        page:
+          type: number
+          example: 1
+        isLeft:
+          type: number
+          example: 5
+        count:
+          type: number
+          example: 20
+        rows:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: 93cbcbbf-c9d2-44c5-ba68-274df3a37eb9 
+              username: 
+                type: string
+                example: johnCena
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          example: johnCena
+        email:
+          type: string
+          example: johncena@mail.com
+        password:
+          type: string
+          example: t3stPas$
+    UserResp:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 96bb5f89-78d6-4a16-89d4-7294f32b92c4
+        username:
+          type: string
+          example: johnCena
+        email:
+          type: string
+          example: johncena@mail.com
+        registered:
+          type: string
+          example: "2024-04-16T14:15:59.553Z"
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          example: johncena@mail.com
+        password:
+          type: string
+          example: t3stPas$
+    Errors:
+      type: object
+      properties:
+        code:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorObject"
+    ErrorObject:
+      type: object
+      properties:
+        msg:
+          type: string
