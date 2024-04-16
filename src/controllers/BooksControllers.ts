@@ -41,7 +41,7 @@ class BooksControllers {
             res.status(200).send(books);
 
         } catch (error: any) {
-            console.log(error)
+
             ErrorHandler.do(error, res)
         }
 
@@ -101,10 +101,10 @@ class BooksControllers {
             }
 
             const book = await BooksServices.createBook(req.body)
-            console.log(book)
+
             res.status(200).send(book);
         } catch (error: any) {
-            console.log(error)
+
             ErrorHandler.do(error, res)
         }
     }

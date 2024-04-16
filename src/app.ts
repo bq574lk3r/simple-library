@@ -20,7 +20,8 @@ app.use(router);
 
 
 
-app.use(function onError(err: any, req: any, res: any) {
+app.use(function onError(err: any, req: any, res: any, next: any) {
+  console.error(err)
   res.status(500).end();
 });
 
