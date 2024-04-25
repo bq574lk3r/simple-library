@@ -1,0 +1,396 @@
+paths:
+  /books/:
+    get:
+      summary: get books
+      description: get books
+      tags:
+        - Book
+      parameters:
+        - in: query
+          name: page
+          required: false
+          description: page books
+          schema:
+            type: number
+            example: 1
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BooksArray"
+        "400":
+          description: <b>Bad Request</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /books/count/:
+    get:
+      summary: count books
+      tags:
+        - Book
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                    example: 10
+        "400":
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /books/search:
+    get:
+      summary: search books
+      description: search books by title and author
+      tags:
+        - Book
+      parameters:
+        - in: query
+          name: page
+          required: false
+          description: page books
+          schema:
+            type: integer
+            example: 1
+        - in: query
+          name: title
+          required: false
+          description: title book
+          schema:
+            type: string
+            example: just
+        - in: query
+          name: author
+          required: false
+          description: author book
+          schema:
+            type: string
+            example: Shia   
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BooksArray"
+        "400":
+          description: <b>Bad Request</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /book/add:
+    post:
+      summary: add book
+      security:
+        - bearerAuth: []
+      tags:
+        - Book for authorized users 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Book"
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResp"
+        "400":
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+        "404":
+          description: <b>Not Found</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /book/reserve:
+    post:
+      summary: reserve book
+      security:
+        - bearerAuth: []
+      tags:
+        - Book for authorized users 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id: 
+                  type: string
+                  example: 41ccd5d3-1582-43eb-af26-e672e60e0500
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: 
+                    type: string
+                    example: 1bfa9cdc-0774-4cd5-8bce-16fc417fcaa7
+                  UserId: 
+                    type: string
+                    example: d046c4dd-04c2-4aef-b971-6c1f7081fc20
+                  BookId:
+                    type: string
+                    example: 41ccd5d3-1582-43eb-af26-e672e60e0500
+                  updatedAt:
+                    type: string
+                    example: 2024-04-17T16:34:22.570Z
+                  createdAt: 
+                    type: string
+                    example: 2024-04-17T16:34:22.570Z
+        "400":
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /book/{id}:
+    get:
+      summary: get current book
+      tags:
+        - Book
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: id book
+          schema:
+            type: string
+            example: e6f65005-ecd2-4bb8-8231-a6b4d964e332
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResp"
+        "400":
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+        "404":
+          description: <b>Not Found</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+    patch:
+      summary: update book
+      security:
+        - bearerAuth: []
+      tags:
+        - Book for authorized users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: id book
+          schema:
+            type: string
+            example: e6f65005-ecd2-4bb8-8231-a6b4d964e332
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Book"
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookResp"
+        "400":
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+        "404":
+          description: <b>Not Found</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+    delete:
+      summary: delete book
+      security:
+        - bearerAuth: []
+      tags:
+        - Book for authorized users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: id book
+          schema:
+            type: string
+            example: e6f65005-ecd2-4bb8-8231-a6b4d964e332
+      responses:
+        "200":
+          description: <b>Ok</b>
+        "400":
+          description: invalid data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+        "404":
+          description: <b>Not Found</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+  /settings/:
+    patch:
+      summary: Update User
+      description: Update user fields username | email | password and return user object with id if success
+      security:
+        - bearerAuth: []
+      tags:
+        - For authorized users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+
+      responses:
+        "200":
+          description: <b>Ok</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResp"
+        "400":
+          description: <b>Bad Request</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+    delete:
+      summary: delete user
+      security:
+        - bearerAuth: []
+      tags:
+        - For authorized users
+      responses:
+        "200":
+          description: <b>Ok</b>
+        "400":
+          description: <b>Bad Request</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+        "404":
+          description: <b>Not Found</b>
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+components:
+  schemas:
+    BooksArray:
+      type: object
+      properties:
+        page:
+          type: number
+          example: 1
+        isLeft:
+          type: number
+          example: 5
+        count:
+          type: number
+          example: 20
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookResp"
+    Book:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Just Do It
+        author:
+          type: string
+          example: Shia LaBeouf
+        yearPublication:
+          type: integer
+          example: 2010
+        pages:
+          type: integer
+          example: 42
+        availability:
+          type: integer
+          example: 2
+    BookResp:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 96bb5f89-78d6-4a16-89d4-7294f32b92c4
+        title:
+          type: string
+          example: Just Do It
+        author:
+          type: string
+          example: Shia LaBeouf
+        yearPublication:
+          type: integer
+          example: 2010
+        pages:
+          type: integer
+          example: 42
+        availability:
+          type: integer
+          example: 2
+    Errors:
+      type: object
+      properties:
+        code:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorObject"
+    ErrorObject:
+      type: object
+      properties:
+        msg:
+          type: string

@@ -154,7 +154,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - For authorized users
+        - User for authorized
       requestBody:
         required: true
         content:
@@ -180,7 +180,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - For authorized users
+        - User for authorized
       responses:
         "200":
           description: <b>Ok</b>
