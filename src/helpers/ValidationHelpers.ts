@@ -1,16 +1,30 @@
-import { body, param, query } from 'express-validator';
+import { body, header, param, query, checkExact } from 'express-validator';
 
 class ValidationHelpers {
-    validateUpdatedData = [
+    validateUpdatedData = checkExact([
         body(['title', 'author']).optional().notEmpty().isString().withMessage('string value expected'),
         body(['yearPublication', 'pages', 'availability']).optional().notEmpty().isInt().withMessage('integer value expected'),
-    ]
+    ], {
+        message: 'Too many fields specified',
+    })
 
     validateDataBook = [
         body(['title', 'author', 'yearPublication', 'pages']).notEmpty().withMessage('all fields must be filled in:\'title\', \'author\', \'yearPublication\', \'pages\''),
         body(['title', 'author']).isString().withMessage('string value expected'),
         body(['yearPublication', 'pages']).isInt().withMessage('integer value expected'),
         body('availability').optional().isInt().withMessage('integer value expected'),
+    ]
+
+    validateaReserveBook = [
+        body('id').isUUID().withMessage('invalid id')
+    ]
+
+    validateParamId = [
+        param('id').isUUID().withMessage('invalid id')
+    ]
+
+    validateQueryPage = [
+        query('page').optional().isInt({ min: 1 }).withMessage('invalid page, min value is 1')
     ]
 
     _userData = [
@@ -24,21 +38,15 @@ class ValidationHelpers {
         ...this._userData
     ]
 
-    validateUpdatedUser = [
+    validateUpdatedUser = checkExact([
         ...this._userData
-    ]
+    ], {
+        message: 'Too many fields specified',
+    })
 
     validateLogin = [
         body('email').isEmail().withMessage('use the correct email'),
         body('password').isString().withMessage('incorrect password'),
-    ]
-
-    validateParamId = [
-        param('id').notEmpty().isUUID().withMessage('invalid id')
-    ]
-
-    validateQueryPage = [
-        query('page').optional().isInt({ min: 1 }).withMessage('invalid page, min value is 1')
     ]
 };
 

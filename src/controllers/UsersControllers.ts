@@ -12,7 +12,9 @@ const SECRET_KEY = String(process.env.SECRET_KEY);
 import jwt from 'jsonwebtoken';
 
 
-
+interface IReqAuthUser extends Request {
+    userId?: string
+}
 
 class UsersControllers {
     async createUser(req: Request, res: Response) {
@@ -131,7 +133,7 @@ class UsersControllers {
 
     }
 
-    async updateUserById(req: any, res: Response) {
+    async updateUserById(req: IReqAuthUser, res: Response) {
         try {
 
             const errors = validationResult(req);

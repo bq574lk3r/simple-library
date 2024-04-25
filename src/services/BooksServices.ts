@@ -16,11 +16,21 @@ interface IBook {
     availability?: number
 }
 
+interface IModelBook extends IBook, Model { }
+
 interface ICountedBooks {
     page: number,
     isLeft: number,
     count: number,
     rows: Model<IBook>[]
+}
+
+interface ITakeBooks extends Model {
+    id: string,
+    UserId: string,
+    BookId: string,
+    updatedAt: string,
+    createdAt: string
 }
 
 export class BooksServices {
@@ -57,15 +67,13 @@ export class BooksServices {
     }
 
     async getBookById(id: string): Promise<Model<IBook> | null> {
-        const bookById = await Book.findByPk(id,
+        return await Book.findByPk(id,
             {
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
                 },
                 raw: true
             })
-
-        return bookById;
     }
 
     async searchBooks(dataBook: { author: string, title: string, page: number }): Promise<ICountedBooks | void> {
@@ -116,17 +124,14 @@ export class BooksServices {
     }
 
     async updateBookById(id: string, updateData: IBook): Promise<IBook | number> {
-        const { title, author, yearPublication, pages, availability } = updateData;
-
-        const updatedBook = await Book.update({ title, author, yearPublication, pages, availability },
+        const [updatedBook, count] = (await Book.update({ ...updateData },
             {
                 where: { id },
                 returning: true,
-            });
+            })).flat() as [IBook, number];
 
-        const [count] = updatedBook;
 
-        return updatedBook[1][0]?.dataValues || count
+        return updatedBook || count;
 
     }
 
@@ -137,7 +142,7 @@ export class BooksServices {
 
     }
 
-    async takeBook(userId: string, bookData: IBook): Promise<any | null> {
+    async takeBook(userId: string, bookData: IBook): Promise<ITakeBooks | null> {
         const { id: bookId } = bookData
 
         const t = await sequelize.transaction({
@@ -145,21 +150,26 @@ export class BooksServices {
         });
 
         try {
-            const book: any = await Book.decrement('availability',
+            const [book] = (await Book.decrement('availability',
                 {
                     by: 1,
                     where: { id: bookId },
                     transaction: t
-                })
+                })).flat(2) as [IModelBook]
 
-            const { availability } = book.flat(2)[0]
 
-            if (availability < 0) throw new ResponseError(406)
+            const { availability } = book
 
-            let userBook = await BooksUsers.create(
-                { UserId: userId, BookId: bookId }, {
-                transaction: t
-            })
+            if (availability && availability < 0) throw new ResponseError(406)
+
+            const userBook = await BooksUsers.create(
+                {
+                    UserId: userId,
+                    BookId: bookId
+                },
+                {
+                    transaction: t
+                }) as ITakeBooks
 
             await t.commit();
             return userBook;

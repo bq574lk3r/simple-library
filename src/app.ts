@@ -1,10 +1,10 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
+dotenv.config({ path: `${process.env.NODE_ENV || ''}.env` });
 
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './swaggerSpec';
+import { swaggerSpec, swaggerUiOpts } from './swaggerSpec';
 
-dotenv.config({ path: `${process.env.NODE_ENV || ''}.env` });
 import sequelize from './config/db'
 
 
@@ -17,13 +17,13 @@ import router from './routes/';
 
 app.use(express.json());
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOpts));
 
 app.use(router);
 
 
 
-app.use(function onError(err: any, req: any, res: any, next: any) {
+app.use(function onError(err: any, req: Request, res: Response, next: NextFunction) {
   console.error(err)
   res.status(500).end();
 });

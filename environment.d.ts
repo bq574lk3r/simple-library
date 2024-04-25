@@ -2,7 +2,6 @@ declare global {
     namespace NodeJS {
         interface ProcessEnv {
             PORT?: string;
-            SENTRY_DSN: string,
             SECRET_KEY: string,
 
             DATABASE: string,

@@ -155,8 +155,6 @@ class BooksControllers {
     async takeBook(req: any, res: Response) {
         try {
 
-            req.userId
-
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 throw new ResponseError(400, errors.array());

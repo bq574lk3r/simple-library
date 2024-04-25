@@ -4,6 +4,11 @@ import Book from './Books.model'
 import User from './Users.model'
 
 const BooksUsers = sequelize.define('BooksUsers', {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+    },
     BookId: {
         type: DataTypes.UUID,
         allowNull: false,

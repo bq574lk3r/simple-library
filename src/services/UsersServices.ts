@@ -12,6 +12,8 @@ interface IUser {
     bookId?: string
 }
 
+interface IModelUser extends IUser, Model { }
+
 interface ICountedUsers {
     page: number,
     isLeft: number,
@@ -20,24 +22,24 @@ interface ICountedUsers {
 }
 
 export class BooksServices {
-    async createUser(dataUser: IUser): Promise<Model<IUser> | void> {
+    async createUser(dataUser: IUser): Promise<IModelUser | void> {
         const { username, email, password } = dataUser;
 
         const newUser = await User.create({
             username, email, password
         });
 
-        return newUser
+        return newUser?.dataValues
     }
 
-    async getUserByEmail(email: string): Promise<any | null> {
+    async getUserByEmail(email: string): Promise<IModelUser | null> {
         const user = await User.findOne({
             where: {
                 email
             },
         })
 
-        return user
+        return user?.dataValues
     }
 
     async getUsers(page: number): Promise<ICountedUsers | null> {
@@ -71,19 +73,16 @@ export class BooksServices {
     async getUserById(id: string): Promise<Model<IUser> | null> {
         const user = await User.findByPk(id, {
             attributes: ['id', 'username', 'registered'],
-            raw: true,
         })
+
         return user
     }
 
-    async updateUserById(id: string, userData: IUser): Promise<IUser | number> {
-        const { username, email, password } = userData
-        const updatedUser = await User.update({ username, email, password },
+    async updateUserById(id: string | undefined, userData: IUser): Promise<IUser | number> {
+        const updatedUser = await User.update({ ...userData },
             {
                 where: { id },
-
                 returning: true,
-
             });
 
         const [count] = updatedUser;

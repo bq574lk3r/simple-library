@@ -7,12 +7,12 @@ const router = express.Router();
 
 router.use(authenticateToken)
 
-router.post('/reserve', booksControllers.takeBook)
+router.post('/reserve', validationHelpers.validateaReserveBook, booksControllers.takeBook)
 
 router.post('/add', validationHelpers.validateDataBook, booksControllers.createBook);
 
-router.patch('/:id', validationHelpers.validateUpdatedData, booksControllers.updateBookById)
+router.patch('/:id', validationHelpers.validateParamId, validationHelpers.validateUpdatedData, booksControllers.updateBookById)
 
-router.delete('/:id', booksControllers.deleteBookById)
+router.delete('/:id', validationHelpers.validateParamId, booksControllers.deleteBookById)
 
 export default router
