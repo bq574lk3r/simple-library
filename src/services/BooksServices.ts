@@ -112,10 +112,8 @@ export class BooksServices {
     }
 
     async createBook(dataBook: IBook): Promise<IBook | void> {
-        const { title, author, yearPublication, pages, availability } = dataBook;
-
         const book = await Book.create({
-            title, author, yearPublication, pages, availability
+            ...dataBook
         });
 
         const { createdAt, updatedAt, ...bookData } = book.dataValues;

@@ -8,12 +8,14 @@ class ValidationHelpers {
         message: 'Too many fields specified',
     })
 
-    validateDataBook = [
+    validateDataBook = checkExact([
         body(['title', 'author', 'yearPublication', 'pages']).notEmpty().withMessage('all fields must be filled in:\'title\', \'author\', \'yearPublication\', \'pages\''),
         body(['title', 'author']).isString().withMessage('string value expected'),
         body(['yearPublication', 'pages']).isInt().withMessage('integer value expected'),
         body('availability').optional().isInt().withMessage('integer value expected'),
-    ]
+    ], {
+        message: 'Too many fields specified',
+    })
 
     validateaReserveBook = [
         body('id').isUUID().withMessage('invalid id')
