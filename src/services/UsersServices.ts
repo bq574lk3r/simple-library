@@ -3,7 +3,7 @@ import { Model } from 'sequelize';
 import { User } from '../models/Models';
 import counterIsLeft from '../utils/CounterIsLeft';
 
-interface IUser {
+export interface IUser {
     username: string,
     email: string,
     password: string,

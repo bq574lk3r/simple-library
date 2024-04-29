@@ -7,7 +7,7 @@ import ResponseError from '../utils/ResponseError';
 import counterIsLeft from '../utils/CounterIsLeft';
 
 
-interface IBook {
+export interface IBook {
     id?: string,
     title: string,
     author: string,
@@ -122,11 +122,11 @@ export class BooksServices {
     }
 
     async updateBookById(id: string, updateData: IBook): Promise<IBook | number> {
-        const [updatedBook, count] = (await Book.update({ ...updateData },
+        const [count, updatedBook] = (await Book.update({ ...updateData },
             {
                 where: { id },
                 returning: true,
-            })).flat() as [IBook, number];
+            })).flat() as [number, IBook];
 
 
         return updatedBook || count;
